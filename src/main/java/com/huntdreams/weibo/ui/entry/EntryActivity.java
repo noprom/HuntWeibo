@@ -3,6 +3,7 @@ package com.huntdreams.weibo.ui.entry;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.huntdreams.weibo.cache.file.FileCacheManager;
 import com.huntdreams.weibo.support.common.CrashHandler;
 
 /**
@@ -19,5 +20,9 @@ public class EntryActivity extends Activity{
         CrashHandler.init(this);
         CrashHandler.register();
         super.onCreate(savedInstanceState);
+
+        // Clear cache
+        FileCacheManager.instance(this).clearUnavailable();
+
     }
 }
