@@ -2,6 +2,9 @@ package com.huntdreams.weibo.cache.file;
 
 import android.content.Context;
 
+import com.huntdreams.weibo.cache.Constants;
+import com.huntdreams.weibo.support.common.Utility;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,14 +98,69 @@ public class FileCacheManager {
     }
 
     public InputStream createCacheFromNetWork(String type, String name, String url)throws IOException{
-        return " ";
+        return createCacheFromNetwork(type, name, url, null);
     }
 
     public InputStream createCacheFromNetwork(String type, String name, String url, ProgressCallback callback)throws IOException{
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setRequestMethod("GET");
         conn.setConnectTimeout(5000);
-        byte[] buf = read
+        byte[] buf = readInputStream(conn.getInputStream(),conn.getContentLength(),callback);
+        createCache(type,name,buf);
+        conn.disconnect();
+        return getCache(type,name);
+    }
+
+    public InputStream createLargeCacheFromNetwork(String type, String name, String url, ProgressCallback callback) throws IOException {
+        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+        conn.setRequestMethod("GET");
+        conn.setConnectTimeout(5000);
+        createCacheFromStream(type, name, conn.getInputStream(), conn.getContentLength(), callback);
+        conn.disconnect();
+        return getCache(type, name);
+    }
+
+    public void createCacheFromStream(String type, String name, InputStream ipt, int total, ProgressCallback callback) throws IOException {
+        String path = getCachePath(type, name);
+        File  f = new File(path);
+        if(f.exists()){
+            f.delete();
+        }
+        f.getParentFile().mkdirs();
+        f.createNewFile();
+
+        FileOutputStream fos = new FileOutputStream(f);
+        byte[] buf = new byte[512];
+        int len = 0, read = 0;
+        while((len = ipt.read(buf)) != -1){
+            fos.write(buf, 0, len);
+            read += len;
+            callback.onProgressChanged(read, total);
+
+            if(!callback.shouldContinue()){
+                fos.close();
+                ipt.close();
+                f.delete();
+                return;
+            }
+        }
+        fos.close();
+        ipt.close();
+    }
+
+    public InputStream getCache(String type, String name) throws IOException{
+        String path = mCacheDir.getPath() + "/" + type + "/" + name;
+        File f = new File(path);
+        if(!f.exists()){
+            return null;
+        }else{
+            FileInputStream fis = new FileInputStream(path);
+            return fis;
+        }
+    }
+
+    public String getCachePath(String path, String name){
+        return mCacheDir.getPath() + "/" + path + "/" +name;
     }
 
     private byte[] readInputStream(InputStream in,int total, ProgressCallback callback) throws IOException{
@@ -125,5 +183,28 @@ public class FileCacheManager {
         }
         opt.close();
         return ret;
+    }
+
+    /**
+     * 清除缓存
+     */
+    public void clearUnavailable(){
+        try{
+            clearUnavailable(mCacheDir);
+        }catch (NullPointerException e){}
+    }
+
+    private void clearUnavailable(File dir){
+        File[] files = dir.listFiles();
+        for(File f:files){
+            if(f.isDirectory()){
+                clearUnavailable(f);
+            }else{
+                long time = f.lastModified();
+                if(!Utility.isCacheAvailable(time, Constants.FILE_CACHE_DAYS)){
+                    f.delete();
+                }
+            }
+        }
     }
 }
