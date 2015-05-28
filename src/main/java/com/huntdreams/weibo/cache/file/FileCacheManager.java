@@ -2,10 +2,14 @@ package com.huntdreams.weibo.cache.file;
 
 import android.content.Context;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * 文件缓存Manager
@@ -90,4 +94,36 @@ public class FileCacheManager {
         return distFile.getAbsolutePath();
     }
 
+    public InputStream createCacheFromNetWork(String type, String name, String url)throws IOException{
+        return " ";
+    }
+
+    public InputStream createCacheFromNetwork(String type, String name, String url, ProgressCallback callback)throws IOException{
+        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+        conn.setRequestMethod("GET");
+        conn.setConnectTimeout(5000);
+        byte[] buf = read
+    }
+
+    private byte[] readInputStream(InputStream in,int total, ProgressCallback callback) throws IOException{
+        ByteArrayOutputStream opt = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        int len = 0,read = 0;
+        while((len = in.read(buf)) != -1){
+            opt.write(buf,0,len);
+            read += len;
+            if(callback != null){
+                callback.onProgressChanged(read,total);
+            }
+        }
+        in.close();
+        byte[] ret ;
+        try{
+            ret = opt.toByteArray();
+        }catch (OutOfMemoryError e){
+            ret = null;
+        }
+        opt.close();
+        return ret;
+    }
 }
