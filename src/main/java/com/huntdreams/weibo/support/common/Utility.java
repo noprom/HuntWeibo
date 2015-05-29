@@ -1,5 +1,7 @@
 package com.huntdreams.weibo.support.common;
 
+import android.content.Context;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -11,7 +13,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class Utility {
 
+    /**
+     * 缓存是否有效
+     * @param createTime
+     * @param availableDays
+     * @return
+     */
     public static boolean isCacheAvailable(long createTime, int availableDays){
         return System.currentTimeMillis() <= createTime + TimeUnit.DAYS.toMillis(availableDays);
+    }
+
+    public static void startService(Context context){
+
     }
 }
