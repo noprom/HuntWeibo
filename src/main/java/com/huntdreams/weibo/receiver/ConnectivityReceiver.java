@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.util.Log;
 
+import com.huntdreams.weibo.support.common.Utility;
+
 import static com.huntdreams.weibo.BuildConfig.DEBUG;
 /**
  * 网络连接类
@@ -22,7 +24,7 @@ public class ConnectivityReceiver extends BroadcastReceiver{
     @Override
     public void onReceive(Context context, Intent intent) {
         if(readNetworkState(context)){
-
+            Utility.startServices(context);
         }
     }
 
