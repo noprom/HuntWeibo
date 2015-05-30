@@ -152,4 +152,13 @@ public class LoginApiCache {
         mPrefs.edit().putString("expires", b.toString()).commit();
     }
 
+    /**
+     * 新增一个用户，并返回过期时间
+     * @param token
+     * @param expire
+     * @return
+     */
+    public long addUser(String token, String expire){
+
+    }
 }
