@@ -3,7 +3,10 @@ package com.huntdreams.weibo.cache.login;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.huntdreams.weibo.api.BaseApi;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * 用户登录缓存
@@ -33,7 +36,43 @@ public class LoginApiCache {
         mExpireDate = mPrefs.getLong("expires_in",Long.MIN_VALUE);
 
         if(mAccessToken != null){
-
+            BaseApi.setAccessToken(mAccessToken);
         }
+
+    }
+
+    private void parseMultiUser(){
+        // names
+        String str = mPrefs.getString("names","");
+        if(str == null || str.trim().equals("")){
+            return;
+        }
+        mNames.addAll(Arrays.asList(str.split(",")));
+
+        // tokens
+        str = mPrefs.getString("tokens","");
+        if(str == null || str.trim().equals("")){
+            return;
+        }
+        mTokens.addAll(Arrays.asList(str.split(",")));
+
+        // expires
+        str = mPrefs.getString("expires","");
+        if(str == null || str.trim().equals("")){
+            return;
+        }
+        String[] s = str.split(",");
+        for(String ss : s){
+            mExpireDates.add(Long.valueOf(ss));
+        }
+
+        if(mTokens.size() != mNames.size() ||
+           mTokens.size() != mExpireDates.size() ||
+           mExpireDates.size() != mNames.size()) {
+           mNames.clear();
+           mTokens.clear();
+           mExpireDates.clear();
+        }
+
     }
 }
