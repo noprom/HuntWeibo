@@ -159,6 +159,16 @@ public class LoginApiCache {
      * @return
      */
     public long addUser(String token, String expire){
+        BaseApi.setAccessToken(token);
+        // TODO add a new user
+        return 0;
+    }
 
+    /**
+     * 切换用户
+     * @param position
+     */
+    public void switchTouser(int position){
+        // TODO UserApiCache
     }
 }
