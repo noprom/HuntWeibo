@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import com.huntdreams.weibo.service.ReminderService;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -53,7 +55,7 @@ public class Utility {
         Settings settings = Settings.getInstance(context);
         int interval = getIntervalTime(settings.getInt(Settings.NOTIFICATION_INTERVAL, 1));
         if(interval > -1){
-
+            startServiceAlarm(context, ReminderService.class, interval);
         }
     }
 
