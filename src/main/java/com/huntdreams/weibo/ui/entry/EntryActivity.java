@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.huntdreams.weibo.cache.file.FileCacheManager;
 import com.huntdreams.weibo.receiver.ConnectivityReceiver;
 import com.huntdreams.weibo.support.common.CrashHandler;
+import com.huntdreams.weibo.support.common.FilterUtility;
 
 /**
  * 应用程序入口：授权新浪微博接口
@@ -27,6 +28,9 @@ public class EntryActivity extends Activity{
         // Init
         ConnectivityReceiver.readNetworkState(this);
         // TODO init emotions
+        FilterUtility.init(this);
+        // TODO Crash log
+
 
     }
 }
