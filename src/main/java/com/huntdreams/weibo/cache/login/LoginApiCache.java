@@ -38,7 +38,14 @@ public class LoginApiCache {
         if(mAccessToken != null){
             BaseApi.setAccessToken(mAccessToken);
         }
+        parseMultiUser();
+    }
 
+    public void login(String token, String expire){
+        mAccessToken = token;
+        BaseApi.setAccessToken(mAccessToken);
+        mExpireDate = System.currentTimeMillis() + Long.valueOf(expire) * 1000;
+        mUid =
     }
 
     private void parseMultiUser(){
