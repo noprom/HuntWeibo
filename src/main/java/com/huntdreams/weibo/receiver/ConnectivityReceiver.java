@@ -25,6 +25,8 @@ public class ConnectivityReceiver extends BroadcastReceiver{
     public void onReceive(Context context, Intent intent) {
         if(readNetworkState(context)){
             Utility.startServices(context);
+        }else{
+            Utility.stopServices(context);
         }
     }
 
