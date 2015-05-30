@@ -120,5 +120,36 @@ public class LoginApiCache {
 
     }
 
-    
+    private void writeMultiUser(){
+        StringBuilder b = new StringBuilder();
+        for (int i = 0, size = mNames.size(); i < size; i++) {
+            b.append(mNames.get(i));
+
+            if (i < mNames.size() - 1) {
+                b.append(",");
+            }
+        }
+        mPrefs.edit().putString("names", b.toString()).commit();
+
+        b = new StringBuilder();
+        for (int i = 0, size = mTokens.size(); i < size; i++) {
+            b.append(mTokens.get(i));
+
+            if (i < mTokens.size() - 1) {
+                b.append(",");
+            }
+        }
+        mPrefs.edit().putString("tokens", b.toString()).commit();
+
+        b = new StringBuilder();
+        for (int i = 0, size = mExpireDates.size(); i < size; i++) {
+            b.append(mExpireDates.get(i));
+
+            if (i < mExpireDates.size() - 1) {
+                b.append(",");
+            }
+        }
+        mPrefs.edit().putString("expires", b.toString()).commit();
+    }
+
 }
