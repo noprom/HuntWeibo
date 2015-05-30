@@ -19,7 +19,7 @@ public class AccountApi extends BaseApi{
             JSONObject json = request(Constants.GET_UID, new WeiboParameters(), HTTP_GET);
             return json.optString("uid");
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
     }
 }

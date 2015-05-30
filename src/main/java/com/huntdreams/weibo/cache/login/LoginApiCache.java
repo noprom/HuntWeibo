@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.huntdreams.weibo.api.BaseApi;
+import com.huntdreams.weibo.api.user.AccountApi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +46,43 @@ public class LoginApiCache {
         mAccessToken = token;
         BaseApi.setAccessToken(mAccessToken);
         mExpireDate = System.currentTimeMillis() + Long.valueOf(expire) * 1000;
-        mUid =
+        mUid = AccountApi.getUid();
+    }
+
+    public void logout(){
+        mAccessToken = null;
+        mExpireDate = Long.MIN_VALUE;
+        mPrefs.edit().remove("access_token").remove("expires_in").remove("uid").commit();
+    }
+
+    public void cache() {
+        mPrefs.edit().putString("access_token", mAccessToken)
+                .putLong("expires_in", mExpireDate)
+                .putString("uid", mUid)
+                .commit();
+    }
+
+    public String getAccessToken() {
+        return mAccessToken;
+    }
+
+    public String getUid() {
+        return mUid;
+    }
+
+    public long getExpireDate() {
+        return mExpireDate;
+    }
+
+    public String[] getUserNames() {
+        return mNames.toArray(new String[mNames.size()]);
+    }
+
+    public void reloadMultiUser() {
+        mNames.clear();
+        mTokens.clear();
+        mExpireDates.clear();
+        parseMultiUser();
     }
 
     private void parseMultiUser(){
@@ -82,4 +119,6 @@ public class LoginApiCache {
         }
 
     }
+
+    
 }
