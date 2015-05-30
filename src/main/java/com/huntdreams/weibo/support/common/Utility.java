@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 
 import com.huntdreams.weibo.service.ReminderService;
 
@@ -35,7 +36,7 @@ public class Utility {
     }
 
     /**
-     * 开启闹钟服务
+     * 开启一个定时服务
      * @param context
      * @param service
      * @param intveral
@@ -48,6 +49,18 @@ public class Utility {
     }
 
     /**
+     * 关闭一个定时服务
+     * @param context
+     * @param service
+     */
+    public static void stopServiceAlarm(Context context, Class<?> service){
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(context, service);
+        PendingIntent p = PendingIntent.getService(context,  REQUEST_CODE, i, PendingIntent.FLAG_CANCEL_CURRENT);
+        am.cancel(p);
+    }
+
+    /**
      * 开启一个service
      * @param context
      */
@@ -56,6 +69,26 @@ public class Utility {
         int interval = getIntervalTime(settings.getInt(Settings.NOTIFICATION_INTERVAL, 1));
         if(interval > -1){
             startServiceAlarm(context, ReminderService.class, interval);
+        }
+    }
+
+    /**
+     * 关闭一个service
+     * @param context
+     */
+    public static void stopServices(Context context){
+        stopServiceAlarm(context, ReminderService.class);
+    }
+
+    /**
+     * 重启一个service
+     * @param context
+     */
+    public static void restartServices(Context context){
+        stopServices(context);
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()){
+            startServices(context);
         }
     }
 
