@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.huntdreams.weibo.cache.file.FileCacheManager;
+import com.huntdreams.weibo.receiver.ConnectivityReceiver;
 import com.huntdreams.weibo.support.common.CrashHandler;
 
 /**
@@ -23,6 +24,9 @@ public class EntryActivity extends Activity{
 
         // Clear cache
         FileCacheManager.instance(this).clearUnavailable();
+        // Init
+        ConnectivityReceiver.readNetworkState(this);
+        // TODO init emotions
 
     }
 }
