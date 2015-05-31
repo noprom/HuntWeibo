@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.view.View;
 
@@ -131,5 +132,36 @@ public class Utility {
 
     public static <T> T findViewById(Activity activity, int id) {
         return (T) activity.findViewById(id);
+    }
+
+    /**
+     * 是否为黑色皮肤
+     * @param context
+     * @return
+     */
+    public static boolean isDarkMode(Context context){
+        return Settings.getInstance(context).getBoolean(Settings.THEME_DARK, false);
+    }
+
+    public static void switchTheme(Context context){
+        Settings.getInstance(context).putBoolean(Settings.THEME_DARK, !isDarkMode(context));
+    }
+
+    /**
+     * 初始化界面皮肤为黑色
+     * @param activity
+     */
+    public static void initDarkMode(Activity activity){
+        if(isDarkMode(activity)){
+            int theme = 0;
+            try {
+                theme = activity.getPackageManager().getActivityInfo(activity.getComponentName(), 0).theme;
+            } catch (PackageManager.NameNotFoundException e) {
+                return;
+            }
+
+            // TODO Convert to dark theme
+            activity.setTheme(theme);
+        }
     }
 }
