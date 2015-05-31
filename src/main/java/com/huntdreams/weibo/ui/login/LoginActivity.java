@@ -1,12 +1,16 @@
 package com.huntdreams.weibo.ui.login;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.huntdreams.weibo.R;
 import com.huntdreams.weibo.cache.login.LoginApiCache;
+import com.huntdreams.weibo.support.common.Utility;
 import com.huntdreams.weibo.ui.common.AbsActivity;
 
 /**
@@ -25,9 +29,25 @@ public class LoginActivity extends AbsActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mLayout = R.layout.activity_login;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+
+        // Init
+        mIsMutli = getIntent().getBooleanExtra("multi", false);
+        mWeb = Utility.findViewById(this, R.id.login_web);
+        mLogin = new LoginApiCache(this);
+
+        // Setup webview
+        WebSettings settings = mWeb.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setSaveFormData(false);
+        settings.setSavePassword(false);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+
+        mWeb.setWebViewClient(new MyWebViewClient());
     }
+
+
 
 
     @Override
@@ -50,5 +70,18 @@ public class LoginActivity extends AbsActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class MyWebViewClient extends WebViewClient{
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            return super.shouldOverrideUrlLoading(view, url);
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+        }
     }
 }
