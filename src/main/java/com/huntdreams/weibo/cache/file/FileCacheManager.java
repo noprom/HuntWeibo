@@ -48,7 +48,7 @@ public class FileCacheManager {
      * 创建缓存文件
      * @param type
      * @param name
-     * @param datas
+     * @param data
      * @throws IOException
      */
     public void createCache(String type, String name, byte[] data) throws IOException {

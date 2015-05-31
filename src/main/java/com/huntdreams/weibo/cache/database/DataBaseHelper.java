@@ -59,7 +59,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     public static synchronized DataBaseHelper instance(Context context){
         if(instance == null){
-            instance = new DataBaseHelper(context)
+            instance = new DataBaseHelper(context);
         }
         return instance;
     }
