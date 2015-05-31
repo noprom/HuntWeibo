@@ -31,7 +31,7 @@ public class AbsActivity extends ToolbarActivity implements ShakeDetector.ShakeL
     private int mLang = -1;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         // TODO change language
         Utility.initDarkMode(this);
         super.onCreate(savedInstanceState);

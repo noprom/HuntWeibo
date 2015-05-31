@@ -1,11 +1,14 @@
 package com.huntdreams.weibo.ui.login;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 
 import com.huntdreams.weibo.R;
+import com.huntdreams.weibo.cache.login.LoginApiCache;
+import com.huntdreams.weibo.ui.common.AbsActivity;
+
 /**
  * 微博登陆界面
  *
@@ -13,7 +16,12 @@ import com.huntdreams.weibo.R;
  * @version 1.0
  * Created by noprom on 2015/5/31.
  */
-public class LoginActivity extends ActionBarActivity {
+public class LoginActivity extends AbsActivity {
+
+    private static final String TAG = LoginActivity.class.getSimpleName();
+    private WebView mWeb;
+    private LoginApiCache mLogin;
+    private boolean mIsMutli = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

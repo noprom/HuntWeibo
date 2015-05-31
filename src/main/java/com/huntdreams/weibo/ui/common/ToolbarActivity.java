@@ -23,7 +23,7 @@ public class ToolbarActivity extends ActionBarActivity {
     protected int mLayout = 0;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         if(Build.VERSION.SDK_INT >= 21){
             requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS);
             getWindow().setAllowEnterTransitionOverlap(true);
