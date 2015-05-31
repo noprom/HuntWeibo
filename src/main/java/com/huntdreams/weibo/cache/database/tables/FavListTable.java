@@ -1,6 +1,7 @@
 package com.huntdreams.weibo.cache.database.tables;
 
 /**
+ * 收藏表结构
  *
  * @author noprom (https://github.com/noprom)
  * @version 1.0
@@ -20,4 +21,3 @@ public class FavListTable
 						+ JSON + " text"
 						+ ");";
 }
-
