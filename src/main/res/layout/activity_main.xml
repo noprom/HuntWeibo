@@ -16,13 +16,10 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:background="?attr/colorPrimary">
-
             <include
                 layout="@layout/toolbar"/>
-
             <include
                 layout="@layout/main_top"/>
-
         </RelativeLayout>
 
         <FrameLayout
@@ -32,7 +29,7 @@
             android:layout_below="@+id/toolbar_wrapper"
             android:background="?attr/colorPrimary">
 
-            <info.papdt.blacklight.ui.common.SlidingTabLayout
+            <com.huntdreams.weibo.ui.common.SlidingTabLayout
                 android:id="@+id/main_tabs"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -41,7 +38,7 @@
 
         </FrameLayout>
 
-        <info.papdt.blacklight.ui.common.HackyViewPager
+        <com.huntdreams.weibo.ui.common.HackyViewPager
             android:id="@+id/main_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
