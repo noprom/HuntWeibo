@@ -1,10 +1,12 @@
 package com.huntdreams.weibo.support.common;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.view.View;
 
 import com.huntdreams.weibo.service.ReminderService;
 
@@ -121,5 +123,13 @@ public class Utility {
                 return -1;
         }
         return -1;
+    }
+
+    public static <T> T findViewById(View v, int id){
+        return (T)v.findViewById(id);
+    }
+
+    public static <T> T findViewById(Activity activity, int id) {
+        return (T) activity.findViewById(id);
     }
 }
