@@ -2,10 +2,13 @@ package com.huntdreams.weibo.ui.common;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -33,11 +36,55 @@ public class AbsActivity extends ToolbarActivity implements ShakeDetector.ShakeL
         Utility.initDarkMode(this);
         super.onCreate(savedInstanceState);
 
+        swipeInit();
+
+        // Common ActionBar settings
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayUseLogoEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        // Shake Detector
+        mDetector = ShakeDetector.getInstance(this);
+
+        // Settings
+        mSettings = Settings.getInstance(this);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // TODO handle the language change
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if(mSettings.getBoolean(Settings.SHAKE_TO_RETURN, true)){
+            mDetector.addListener(this);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mDetector.removeListener(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onShake() {
-
+        this.onBackPressed();
     }
 
     protected View getSwipeView(){
@@ -64,7 +111,26 @@ public class AbsActivity extends ToolbarActivity implements ShakeDetector.ShakeL
             v.setShadowResource(R.drawable.panel_shadow);
         }
 
+        // Swipe gesture configurations
+        v.setSliderFadeColor(0);
+        v.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
 
+            @Override
+            public void onPanelSlide(View v, float percent) {
+                getWindow().getDecorView().setAlpha(1.0f - percent);
+            }
 
+            @Override
+            public void onPanelOpened(View p1) {
+                finish();
+            }
+
+            @Override
+            public void onPanelClosed(View p1) {
+            }
+        });
+
+        // Adjust window color
+        getWindow().setBackgroundDrawable(new ColorDrawable(0));
     }
 }
