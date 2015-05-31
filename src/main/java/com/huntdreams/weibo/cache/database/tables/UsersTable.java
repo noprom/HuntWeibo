@@ -7,7 +7,7 @@ package com.huntdreams.weibo.cache.database.tables;
  * @version 1.0
  * Created by noprom on 2015/5/31.
  */
-public class UserTable {
+public class UsersTable {
 
     public static final String NAME = "users";
 
