@@ -4,7 +4,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Window;
 
 import com.huntdreams.weibo.R;
@@ -40,12 +39,11 @@ public class ToolbarActivity extends ActionBarActivity {
 
             if (Build.VERSION.SDK_INT >= 21) {
                 mToolbar.setElevation(getToolbarElevation());
-
-                View shadow = Utility.findViewById(this, R.id.action_shadow);
-
-                if (shadow != null) {
-                    shadow.setVisibility(View.GONE);
-                }
+                // TODO Add a action_shadow view
+//                View shadow = Utility.findViewById(this, R.id.action_shadow);
+//                if (shadow != null) {
+//                    shadow.setVisibility(View.GONE);
+//                }
             }
         }
     }

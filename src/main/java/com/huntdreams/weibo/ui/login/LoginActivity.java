@@ -22,7 +22,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
 
-import com.huntdreams.weibo.MainActivity;
+import com.huntdreams.weibo.ui.main.MainActivity;
 import com.huntdreams.weibo.R;
 import com.huntdreams.weibo.api.BaseApi;
 import com.huntdreams.weibo.api.PrivateKey;
@@ -49,6 +49,9 @@ public class LoginActivity extends AbsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         mLayout = R.layout.activity_login;
         super.onCreate(savedInstanceState);
+        if(DEBUG){
+            Log.d(TAG, "onCreate()");
+        }
 
         // Init
         mIsMulti = getIntent().getBooleanExtra("multi", false);
