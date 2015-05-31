@@ -14,6 +14,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.huntdreams.weibo.MainActivity;
 import com.huntdreams.weibo.R;
 import com.huntdreams.weibo.api.BaseApi;
 import com.huntdreams.weibo.api.PrivateKey;
@@ -54,10 +55,13 @@ public class LoginActivity extends AbsActivity {
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         mWeb.setWebViewClient(new MyWebViewClient());
+        if(PrivateKey.readFromPref(this)){
+            mWeb.loadUrl(PrivateKey.getOauthLoginPage());
+        }else{
+            mWeb.loadUrl("about:blank");
+            showAppKeyDialog();
+        }
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -81,6 +85,37 @@ public class LoginActivity extends AbsActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void showAppKeyDialog(){
+
+    }
+
+    private void showLoginFail(){
+        new AlertDialog.Builder(LoginActivity.this)
+                .setMessage(R.string.login_fail)
+                .setCancelable(true)
+                .create()
+                .show();
+    }
+
+    private void handleRedirectedUrl(String url){
+        if (!url.contains("error")) {
+            int tokenIndex = url.indexOf("access_token=");
+            int expiresIndex = url.indexOf("expires_in=");
+            String token = url.substring(tokenIndex + 13, url.indexOf("&", tokenIndex));
+            String expiresIn = url.substring(expiresIndex + 11, url.indexOf("&", expiresIndex));
+
+            if (DEBUG) {
+                Log.d(TAG, "url = " + url);
+                Log.d(TAG, "token = " + token);
+                Log.d(TAG, "expires_in = " + expiresIn);
+            }
+
+            new LoginTask().execute(token, expiresIn);
+        } else {
+            showLoginFail();
+        }
+    }
+
     private class MyWebViewClient extends WebViewClient{
 
         @Override
@@ -102,25 +137,6 @@ public class LoginActivity extends AbsActivity {
                 return;
             }
             super.onPageStarted(view, url, favicon);
-        }
-    }
-
-    private void handleRedirectedUrl(String url){
-        if (!url.contains("error")) {
-            int tokenIndex = url.indexOf("access_token=");
-            int expiresIndex = url.indexOf("expires_in=");
-            String token = url.substring(tokenIndex + 13, url.indexOf("&", tokenIndex));
-            String expiresIn = url.substring(expiresIndex + 11, url.indexOf("&", expiresIndex));
-
-            if (DEBUG) {
-                Log.d(TAG, "url = " + url);
-                Log.d(TAG, "token = " + token);
-                Log.d(TAG, "expires_in = " + expiresIn);
-            }
-
-            new LoginTask().execute(token, expiresIn);
-        } else {
-            showLoginFail();
         }
     }
 

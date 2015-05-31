@@ -27,6 +27,15 @@ public class Utility {
     private static final int REQUEST_CODE = 100001;
 
     /**
+     * 即将过期的天数
+     * @param time
+     * @return
+     */
+    public static int expireTimeInDays(long time){
+        return (int) TimeUnit.MILLISECONDS.toDays(time - System.currentTimeMillis());
+    }
+
+    /**
      * 检查Token是否过期
      * @param time
      * @return
