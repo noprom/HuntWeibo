@@ -183,7 +183,7 @@ public class LoginApiCache {
     }
 
     /**
-     * TODO 切换用户
+     * 切换用户
      * @param position
      */
     public void switchToUser(int position) {
