@@ -4,7 +4,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.Window;
+
+import com.huntdreams.weibo.R;
+import com.huntdreams.weibo.support.common.Utility;
 
 /**
  * Activity基类
@@ -28,5 +32,33 @@ public class ToolbarActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(mLayout);
 
+        mToolbar = Utility.findViewById(this, R.id.toolbar);
+        if(mToolbar != null){
+            mToolbar.bringToFront();
+            setSupportActionBar(mToolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            if (Build.VERSION.SDK_INT >= 21) {
+                mToolbar.setElevation(getToolbarElevation());
+
+                View shadow = Utility.findViewById(this, R.id.action_shadow);
+
+                if (shadow != null) {
+                    shadow.setVisibility(View.GONE);
+                }
+            }
+        }
+    }
+
+    public Toolbar getToolbar() {
+        return mToolbar;
+    }
+
+    public float getToolbarElevation() {
+        if (Build.VERSION.SDK_INT >= 21) {
+            return 12.8f;
+        } else {
+            return -1;
+        }
     }
 }
