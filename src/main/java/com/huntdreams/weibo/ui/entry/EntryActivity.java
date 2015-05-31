@@ -11,6 +11,7 @@ import com.huntdreams.weibo.receiver.ConnectivityReceiver;
 import com.huntdreams.weibo.support.common.CrashHandler;
 import com.huntdreams.weibo.support.common.FilterUtility;
 import com.huntdreams.weibo.support.common.Utility;
+import com.huntdreams.weibo.ui.login.LoginActivity;
 
 /**
  * 应用程序入口：授权新浪微博接口
