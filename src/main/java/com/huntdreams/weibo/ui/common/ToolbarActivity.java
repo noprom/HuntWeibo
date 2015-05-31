@@ -23,7 +23,7 @@ public class ToolbarActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS);
             getWindow().setAllowEnterTransitionOverlap(true);
             getWindow().setAllowReturnTransitionOverlap(true);
@@ -32,15 +32,18 @@ public class ToolbarActivity extends ActionBarActivity {
         setContentView(mLayout);
 
         mToolbar = Utility.findViewById(this, R.id.toolbar);
-        if(mToolbar != null){
+
+        if (mToolbar != null) {
             mToolbar.bringToFront();
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
             if (Build.VERSION.SDK_INT >= 21) {
-                mToolbar.setElevation(getToolbarElevation());
-                // TODO Add a action_shadow view
+//                TODO add a shadow
+//                mToolbar.setElevation(getToolbarElevation());
+//
 //                View shadow = Utility.findViewById(this, R.id.action_shadow);
+//
 //                if (shadow != null) {
 //                    shadow.setVisibility(View.GONE);
 //                }

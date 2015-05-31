@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import com.huntdreams.weibo.api.BaseApi;
 import com.huntdreams.weibo.api.user.AccountApi;
+import com.huntdreams.weibo.cache.user.UserApiCache;
+import com.huntdreams.weibo.model.UserModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +21,9 @@ import java.util.Arrays;
 public class LoginApiCache {
 
     private static final String TAG = LoginApiCache.class.getSimpleName();
+
     private Context mContext;
+
     private SharedPreferences mPrefs;
     private String mAccessToken;
     private String mUid;
@@ -29,27 +33,28 @@ public class LoginApiCache {
     private ArrayList<String> mTokens = new ArrayList<String>();
     private ArrayList<Long> mExpireDates = new ArrayList<Long>();
 
-    public LoginApiCache(Context context){
+    public LoginApiCache(Context context) {
         mContext = context;
         mPrefs = context.getSharedPreferences("access_token", Context.MODE_PRIVATE);
         mAccessToken = mPrefs.getString("access_token", null);
         mUid = mPrefs.getString("uid", "");
-        mExpireDate = mPrefs.getLong("expires_in",Long.MIN_VALUE);
+        mExpireDate = mPrefs.getLong("expires_in", Long.MIN_VALUE);
 
-        if(mAccessToken != null){
+        if (mAccessToken != null) {
             BaseApi.setAccessToken(mAccessToken);
         }
+
         parseMultiUser();
     }
 
-    public void login(String token, String expire){
+    public void login(String token, String expire) {
         mAccessToken = token;
         BaseApi.setAccessToken(mAccessToken);
         mExpireDate = System.currentTimeMillis() + Long.valueOf(expire) * 1000;
         mUid = AccountApi.getUid();
     }
 
-    public void logout(){
+    public void logout() {
         mAccessToken = null;
         mExpireDate = Long.MIN_VALUE;
         mPrefs.edit().remove("access_token").remove("expires_in").remove("uid").commit();
@@ -85,44 +90,40 @@ public class LoginApiCache {
         parseMultiUser();
     }
 
-    private void parseMultiUser(){
-        // names
-        String str = mPrefs.getString("names","");
-        if(str == null || str.trim().equals("")){
+    private void parseMultiUser() {
+        String str = mPrefs.getString("names", "");
+        if (str == null || str.trim().equals(""))
             return;
-        }
+
         mNames.addAll(Arrays.asList(str.split(",")));
 
-        // tokens
-        str = mPrefs.getString("tokens","");
-        if(str == null || str.trim().equals("")){
+        str = mPrefs.getString("tokens", "");
+        if (str == null || str.trim().equals(""))
             return;
-        }
+
         mTokens.addAll(Arrays.asList(str.split(",")));
 
-        // expires
-        str = mPrefs.getString("expires","");
-        if(str == null || str.trim().equals("")){
+        str = mPrefs.getString("expires", "");
+        if (str == null || str.trim().equals(""))
             return;
-        }
+
         String[] s = str.split(",");
-        for(String ss : s){
-            mExpireDates.add(Long.valueOf(ss));
+        for (int i = 0; i < s.length; i++) {
+            mExpireDates.add(Long.valueOf(s[i]));
         }
 
-        if(mTokens.size() != mNames.size() ||
-           mTokens.size() != mExpireDates.size() ||
-           mExpireDates.size() != mNames.size()) {
-           mNames.clear();
-           mTokens.clear();
-           mExpireDates.clear();
+        if (mTokens.size() != mNames.size() ||
+                mTokens.size() != mExpireDates.size() ||
+                mExpireDates.size() != mNames.size()) {
+            mNames.clear();
+            mTokens.clear();
+            mExpireDates.clear();
         }
-
     }
 
-    private void writeMultiUser(){
+    private void writeMultiUser() {
         StringBuilder b = new StringBuilder();
-        for (int i = 0, size = mNames.size(); i < size; i++) {
+        for (int i = 0; i < mNames.size(); i++) {
             b.append(mNames.get(i));
 
             if (i < mNames.size() - 1) {
@@ -132,7 +133,7 @@ public class LoginApiCache {
         mPrefs.edit().putString("names", b.toString()).commit();
 
         b = new StringBuilder();
-        for (int i = 0, size = mTokens.size(); i < size; i++) {
+        for (int i = 0; i < mTokens.size(); i++) {
             b.append(mTokens.get(i));
 
             if (i < mTokens.size() - 1) {
@@ -142,7 +143,7 @@ public class LoginApiCache {
         mPrefs.edit().putString("tokens", b.toString()).commit();
 
         b = new StringBuilder();
-        for (int i = 0, size = mExpireDates.size(); i < size; i++) {
+        for (int i = 0; i < mExpireDates.size(); i++) {
             b.append(mExpireDates.get(i));
 
             if (i < mExpireDates.size() - 1) {
@@ -158,17 +159,61 @@ public class LoginApiCache {
      * @param expire
      * @return
      */
-    public long addUser(String token, String expire){
+    public long addUser(String token, String expire) {
+        // Temporarily switch to the new user
         BaseApi.setAccessToken(token);
-        // TODO add a new user
-        return 0;
+
+        // Fetch the new user info
+        UserModel user = new UserApiCache(mContext).getUser(AccountApi.getUid());
+
+        long exp = System.currentTimeMillis() + Long.valueOf(expire) * 1000;
+        if (user != null && !mNames.contains(user.getNameNoRemark())) {
+            // Add it to list
+            mNames.add(user.getNameNoRemark());
+            mTokens.add(token);
+            mExpireDates.add(exp);
+        }
+
+        // Set Token back
+        BaseApi.setAccessToken(mAccessToken);
+
+        writeMultiUser();
+
+        return exp;
     }
 
     /**
-     * 切换用户
+     * TODO 切换用户
      * @param position
      */
-    public void switchTouser(int position){
-        // TODO UserApiCache
+    public void switchToUser(int position) {
+        UserApiCache c = new UserApiCache(mContext);
+        UserModel current = c.getUser(mUid);
+        if (current == null)
+            return;
+
+        String newToken = mTokens.get(position);
+
+        // Get new user
+        BaseApi.setAccessToken(newToken);
+        UserModel next = c.getUser(AccountApi.getUid());
+        if (next == null)
+            return;
+
+        long newExpires = mExpireDates.get(position);
+        mNames.remove(position);
+        mTokens.remove(position);
+        mExpireDates.remove(position);
+
+        mNames.add(current.getNameNoRemark());
+        mTokens.add(mAccessToken);
+        mExpireDates.add(mExpireDate);
+        writeMultiUser();
+
+        mExpireDate = newExpires;
+        mAccessToken = newToken;
+        mUid = next.id;
+
+        cache();
     }
 }

@@ -17,28 +17,32 @@ import java.util.Set;
 public class WeiboParameters extends HashMap<String, Object> {
 
     // URL Encode
-    public String encode(){
+    public String encode() {
         StringBuilder str = new StringBuilder();
         Set<String> keys = keySet();
         boolean first = true;
 
-        for(String key : keys){
+        for (String key : keys) {
             Object value = get(key);
-            if(value instanceof Bitmap){
+
+            if (value instanceof Bitmap) {
+                // Bitmap detected, we should use multipart encode instead
                 return null;
-            }else{
-                if(first){
+            } else {
+                if (first) {
                     first = false;
-                }else{
+                } else {
                     str.append("&");
                 }
-            }
-            try{
-                str.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value.toString(), "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+
+                try {
+                    str.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value.toString(), "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+
+                }
             }
         }
+
         return str.toString();
     }
 
@@ -73,7 +77,7 @@ public class WeiboParameters extends HashMap<String, Object> {
         return new Object[]{b, bitmap, str.toString()};
     }
 
-    private String getBoundaryStr(){
+    private String getBoundaryStr() {
         return String.valueOf(System.currentTimeMillis() * Math.random() % 1024);
     }
 }

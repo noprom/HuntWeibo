@@ -101,7 +101,6 @@ public class UserModel implements Parcelable {
     }
 
     public static final Parcelable.Creator<UserModel> CREATOR = new Parcelable.Creator<UserModel>() {
-
         @Override
         public UserModel createFromParcel(Parcel input) {
             UserModel ret = new UserModel();

@@ -24,37 +24,45 @@ import static com.huntdreams.weibo.BuildConfig.DEBUG;
 public class HttpUtility {
 
     private static final String TAG = HttpUtility.class.getSimpleName();
+
     public static final String POST = "POST";
     public static final String GET = "GET";
 
-    public static String doRequest(String url, WeiboParameters params, String method) throws Exception{
+    public static String doRequest(String url, WeiboParameters params, String method) throws Exception {
         boolean isGet = false;
-        if(method.equals(GET)){
+        if (method.equals(GET)) {
             isGet = true;
         }
 
         String myUrl = url;
+
         String send = params.encode();
-        if(isGet){
+        if (isGet) {
             myUrl += "?" + send;
         }
-        if(DEBUG){
+
+        if (DEBUG) {
             Log.d(TAG, "send = " + send);
             Log.d(TAG, "myUrl = " + myUrl);
         }
 
         URL u = new URL(myUrl);
         HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+
         conn.setRequestMethod(method);
         conn.setDoOutput(!isGet);
-        if(!isGet){
+
+        if (!isGet) {
             conn.setDoInput(true);
         }
+
         conn.setUseCaches(false);
         conn.setConnectTimeout(10000);
         conn.setReadTimeout(10000);
+
         conn.setRequestProperty("Connection", "Keep-Alive");
         conn.setRequestProperty("Charset", "UTF-8");
+
 
         if (send != null) {
             conn.setRequestProperty("Accept-Encoding", "gzip, deflate");
@@ -107,16 +115,22 @@ public class HttpUtility {
             return null;
         } else {
             InputStream in = conn.getInputStream();
+
             String en = conn.getContentEncoding();
+
             if (en != null && en.equals("gzip")) {
                 in = new GZIPInputStream(in);
             }
+
             BufferedReader buffer = new BufferedReader(new InputStreamReader(in));
+
             String s;
             StringBuilder str = new StringBuilder();
+
             while ((s = buffer.readLine()) != null) {
                 str.append(s);
             }
+
             return str.toString();
         }
     }

@@ -20,35 +20,39 @@ import static com.huntdreams.weibo.BuildConfig.DEBUG;
 public abstract class BaseApi {
 
     private static final String TAG = BaseApi.class.getSimpleName();
+
+    // Http Methods
     protected static final String HTTP_GET = HttpUtility.GET;
     protected static final String HTTP_POST = HttpUtility.POST;
+
+    // Access Token
     private static String mAccessToken;
 
-    protected static JSONObject request(String url, WeiboParameters params, String method) throws Exception{
+    protected static JSONObject request(String url, WeiboParameters params, String method) throws Exception {
         return request(mAccessToken, url, params, method, JSONObject.class);
     }
 
-    protected static JSONArray requestArray(String url, WeiboParameters params, String method) throws Exception{
+    protected static JSONArray requestArray(String url, WeiboParameters params, String method) throws Exception {
         return request(mAccessToken, url, params, method, JSONArray.class);
     }
 
-    protected static <T> T request(String token, String url, WeiboParameters params, String method, Class<T> jsonClass) throws Exception{
-        if(token == null){
+    protected static <T> T request(String token, String url, WeiboParameters params, String method, Class<T> jsonClass) throws Exception {
+        if (token == null) {
             return null;
-        }else{
+        } else {
             params.put("access_token", token);
             String jsonData = HttpUtility.doRequest(url, params, method);
-            if(DEBUG){
+
+            if (DEBUG) {
                 Log.d(TAG, "jsonData = " + jsonData);
             }
 
-            if(jsonData != null && (jsonData.contains("{") || jsonData.contains("["))) {
+            if (jsonData != null && (jsonData.contains("{") || jsonData.contains("["))) {
                 return jsonClass.getConstructor(String.class).newInstance(jsonData);
-            }else{
+            } else {
                 return null;
             }
         }
-
     }
 
     protected static JSONObject requestWithoutAccessToken(String url, WeiboParameters params, String method) throws Exception {

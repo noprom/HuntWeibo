@@ -15,13 +15,13 @@ public class PrivateKey extends BaseApi{
 
     private static final String TAG = PrivateKey.class.getSimpleName();
 
-    private static final String
-            PREF = "app_key",
+    private static final String PREF = "app_key",
             PREF_ID = "id",
             PREF_SECRET = "secret",
             PREF_PKG = "package",
             PREF_REDIRECT = "redirect",
             PREF_SCOPE = "scope";
+
     private static String sAppId, sAppSecret, sRedirectUri, sPackageName, sScope;
 
     public static void setPrivateKey(String appId, String appSecret, String redirectUri, String packageName, String scope) {
@@ -32,7 +32,7 @@ public class PrivateKey extends BaseApi{
         sScope = scope;
     }
 
-    public static boolean readFromPref(Context context){
+    public static boolean readFromPref(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREF, Context.MODE_WORLD_READABLE);
         String id = prefs.getString(PREF_ID, null);
         String secret = prefs.getString(PREF_SECRET, null);
@@ -61,7 +61,7 @@ public class PrivateKey extends BaseApi{
                 .commit();
     }
 
-    public static String[] getAll(){
+    public static String[] getAll() {
         return new String[]{
                 sAppId,
                 sAppSecret,

@@ -32,10 +32,15 @@ public class AbsActivity extends ToolbarActivity implements ShakeDetector.ShakeL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO change language
-        Utility.initDarkMode(this);
-        super.onCreate(savedInstanceState);
+        // TODO Language
+//        mLang = Utility.getCurrentLanguage(this);
+//        if (mLang > -1) {
+//            Utility.changeLanguage(this, mLang);
+//        }
 
+        Utility.initDarkMode(this);
+
+        super.onCreate(savedInstanceState);
         swipeInit();
 
         // Common ActionBar settings
@@ -60,9 +65,15 @@ public class AbsActivity extends ToolbarActivity implements ShakeDetector.ShakeL
     protected void onResume() {
         super.onResume();
 
-        // TODO handle the language change
+        // TODO change language
+//        int lang = Utility.getCurrentLanguage(this);
+//        if (lang != mLang) {
+//            recreate();
+//        }
+
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        if(mSettings.getBoolean(Settings.SHAKE_TO_RETURN, true)){
+
+        if (mSettings.getBoolean(Settings.SHAKE_TO_RETURN, true)) {
             mDetector.addListener(this);
         }
     }
@@ -75,24 +86,26 @@ public class AbsActivity extends ToolbarActivity implements ShakeDetector.ShakeL
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
+        if(item.getItemId()==android.R.id.home){
             finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public void onShake() {
         this.onBackPressed();
     }
 
-    protected View getSwipeView(){
+    protected View getSwipeView() {
         return ((ViewGroup) getWindow().getDecorView()).getChildAt(0);
     }
 
     @TargetApi(21)
-    private void swipeInit(){
+    private void swipeInit() {
+        // Replace the view first
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         SlidingPaneLayout v = (SlidingPaneLayout) inflater.inflate(R.layout.swipe_decor_wrapper, null);
         final ViewGroup frame = (ViewGroup) v.findViewById(R.id.swipe_container);
@@ -105,7 +118,7 @@ public class AbsActivity extends ToolbarActivity implements ShakeDetector.ShakeL
         decor.setBackgroundColor(0);
 
         // Elevation
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             frame.setElevation(11.8f);
         } else {
             v.setShadowResource(R.drawable.panel_shadow);

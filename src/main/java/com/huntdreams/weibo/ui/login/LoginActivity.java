@@ -41,7 +41,9 @@ import static com.huntdreams.weibo.BuildConfig.DEBUG;
 public class LoginActivity extends AbsActivity {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
+
     private WebView mWeb;
+
     private LoginApiCache mLogin;
     private boolean mIsMulti = false;
 
@@ -49,16 +51,16 @@ public class LoginActivity extends AbsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         mLayout = R.layout.activity_login;
         super.onCreate(savedInstanceState);
-        if(DEBUG){
-            Log.d(TAG, "onCreate()");
-        }
 
-        // Init
         mIsMulti = getIntent().getBooleanExtra("multi", false);
+
+        // Initialize views
         mWeb = Utility.findViewById(this, R.id.login_web);
+
+        // Create login instance
         mLogin = new LoginApiCache(this);
 
-        // Setup webview
+        // Login page
         WebSettings settings = mWeb.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setSaveFormData(false);
@@ -66,9 +68,10 @@ public class LoginActivity extends AbsActivity {
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         mWeb.setWebViewClient(new MyWebViewClient());
-        if(PrivateKey.readFromPref(this)){
+
+        if (PrivateKey.readFromPref(this)) {
             mWeb.loadUrl(PrivateKey.getOauthLoginPage());
-        }else{
+        } else {
             mWeb.loadUrl("about:blank");
             showAppKeyDialog();
         }
@@ -80,20 +83,50 @@ public class LoginActivity extends AbsActivity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             setResult(RESULT_CANCELED);
             finish();
             return true;
-        }else if(item.getItemId() == R.id.custom){
+        } else if (item.getItemId() == R.id.custom) {
             showAppKeyDialog();
             return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
-    private void showAppKeyDialog(){
+    private void handleRedirectedUrl(String url) {
+        if (!url.contains("error")) {
+            int tokenIndex = url.indexOf("access_token=");
+            int expiresIndex = url.indexOf("expires_in=");
+            String token = url.substring(tokenIndex + 13, url.indexOf("&", tokenIndex));
+            String expiresIn = url.substring(expiresIndex + 11, url.indexOf("&", expiresIndex));
+
+            if (DEBUG) {
+                Log.d(TAG, "url = " + url);
+                Log.d(TAG, "token = " + token);
+                Log.d(TAG, "expires_in = " + expiresIn);
+            }
+
+            new LoginTask().execute(token, expiresIn);
+        } else {
+            showLoginFail();
+        }
+    }
+
+    private void showLoginFail() {
+        // Wrong username or password
+        new AlertDialog.Builder(LoginActivity.this)
+                .setMessage(R.string.login_fail)
+                .setCancelable(true)
+                .create()
+                .show();
+    }
+
+    private void showAppKeyDialog() {
         // Inflate dialog layout
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.app_key, null);
@@ -122,12 +155,12 @@ public class LoginActivity extends AbsActivity {
         // Text listener
         TextWatcher watcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence p1, int p2, int p3, int p4) {
 
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(CharSequence p1, int p2, int p3, int p4) {
 
             }
 
@@ -175,9 +208,9 @@ public class LoginActivity extends AbsActivity {
                     }
                 })
                 .create();
+
         dialog.show();
 
-        // Handle positive button
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,7 +232,6 @@ public class LoginActivity extends AbsActivity {
             }
         });
 
-        // Handle neutral button
         dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -209,33 +241,6 @@ public class LoginActivity extends AbsActivity {
                         tvPkg.getText().toString()));
             }
         });
-    }
-
-    private void showLoginFail(){
-        new AlertDialog.Builder(LoginActivity.this)
-                .setMessage(R.string.login_fail)
-                .setCancelable(true)
-                .create()
-                .show();
-    }
-
-    private void handleRedirectedUrl(String url){
-        if (!url.contains("error")) {
-            int tokenIndex = url.indexOf("access_token=");
-            int expiresIndex = url.indexOf("expires_in=");
-            String token = url.substring(tokenIndex + 13, url.indexOf("&", tokenIndex));
-            String expiresIn = url.substring(expiresIndex + 11, url.indexOf("&", expiresIndex));
-
-            if (DEBUG) {
-                Log.d(TAG, "url = " + url);
-                Log.d(TAG, "token = " + token);
-                Log.d(TAG, "expires_in = " + expiresIn);
-            }
-
-            new LoginTask().execute(token, expiresIn);
-        } else {
-            showLoginFail();
-        }
     }
 
     private static final String SEPERATOR = "::";
@@ -268,14 +273,14 @@ public class LoginActivity extends AbsActivity {
         return str.startsWith(START) && str.length() > START.length() + END.length() && str.endsWith(END);
     }
 
-    private class MyWebViewClient extends WebViewClient{
+    private class MyWebViewClient extends WebViewClient {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if(PrivateKey.isUrlRedirected(url)){
+            if (PrivateKey.isUrlRedirected(url)) {
                 view.stopLoading();
                 handleRedirectedUrl(url);
-            }else{
+            } else {
                 view.loadUrl(url);
             }
             return true;
@@ -292,28 +297,29 @@ public class LoginActivity extends AbsActivity {
         }
     }
 
-    private class LoginTask extends AsyncTask<String, Void, Long>{
-
-        private ProgressDialog mProgressDialog;
+    private class LoginTask extends AsyncTask<String, Void, Long>
+    {
+        private ProgressDialog progDialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog(LoginActivity.this);
-            mProgressDialog.setMessage(getResources().getString(R.string.plz_wait));
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.show();
+            progDialog = new ProgressDialog(LoginActivity.this);
+            progDialog.setMessage(getResources().getString(R.string.plz_wait));
+            progDialog.setCancelable(false);
+            progDialog.show();
         }
 
         @Override
         protected Long doInBackground(String... params) {
-            if(DEBUG){
+            if (DEBUG) {
                 Log.d(TAG, "doInBackground...");
             }
-            if(!mIsMulti){
+
+            if (!mIsMulti) {
                 mLogin.login(params[0], params[1]);
                 return mLogin.getExpireDate();
-            }else{
+            } else {
                 return mLogin.addUser(params[0], params[1]);
             }
         }
@@ -321,7 +327,7 @@ public class LoginActivity extends AbsActivity {
         @Override
         protected void onPostExecute(Long result) {
             super.onPostExecute(result);
-            mProgressDialog.dismiss();
+            progDialog.dismiss();
 
             if (!mIsMulti && mLogin.getAccessToken() != null) {
                 if (DEBUG) {
@@ -334,6 +340,7 @@ public class LoginActivity extends AbsActivity {
                 showLoginFail();
                 return;
             }
+
 
             // Expire date
             String msg = String.format(getResources().getString(R.string.expires_in), Utility.expireTimeInDays(result));
@@ -359,5 +366,6 @@ public class LoginActivity extends AbsActivity {
                     .create()
                     .show();
         }
+
     }
 }

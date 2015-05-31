@@ -23,22 +23,24 @@ import java.net.URL;
  */
 public class FileCacheManager {
 
-    public static interface ProgressCallback{
-        void onProgressChanged(int read,int total);
+    public static interface ProgressCallback {
+        void onProgressChanged(int read, int total);
         boolean shouldContinue();
     }
 
     private static FileCacheManager mInstance;
+
     private File mCacheDir;
 
-    private FileCacheManager(Context context){
+    private FileCacheManager(Context context) {
         mCacheDir = context.getExternalCacheDir();
     }
 
-    public static synchronized FileCacheManager instance(Context context){
-        if(mInstance == null){
+    public static synchronized FileCacheManager instance(Context context) {
+        if (mInstance == null) {
             mInstance = new FileCacheManager(context);
         }
+
         return mInstance;
     }
 
@@ -49,19 +51,20 @@ public class FileCacheManager {
      * @param datas
      * @throws IOException
      */
-    public void createCache(String type,String name,byte[] datas) throws IOException{
+    public void createCache(String type, String name, byte[] data) throws IOException {
         String path = mCacheDir.getPath() + "/" + type + "/" + name;
         File f = new File(path);
-        if(f.exists()){
+        if (f.exists()) {
             f.delete();
         }
         f.getParentFile().mkdirs();
         f.createNewFile();
 
-        FileOutputStream fos = new FileOutputStream(path);
-        fos.write(datas);
-        fos.close();
+        FileOutputStream opt = new FileOutputStream(path);
+        opt.write(data);
+        opt.close();
     }
+
 
     /**
      * 复制缓存文件
@@ -71,44 +74,49 @@ public class FileCacheManager {
      * @return 目标文件绝对路径
      * @throws IOException
      */
-    public String copyCacheTo(String type,String name, String dist) throws IOException{
+    public String copyCacheTo(String type, String name, String dist) throws IOException {
         String path = mCacheDir.getPath() + "/" + type + "/" + name;
-        try{
+
+        try {
             new File(dist).mkdirs();
-        }catch (Exception e){
+        } catch (Exception e) {
             Runtime.getRuntime().exec("mkdir -p " + dist);
         }
 
         File origFile = new File(path);
         File distFile = new File(dist + "/" + name);
-        if(distFile.createNewFile()){
-            FileInputStream fis = new FileInputStream(origFile);
-            FileOutputStream fos = new FileOutputStream(distFile);
+        if (distFile.createNewFile()) {
+            FileInputStream ipt = new FileInputStream(origFile);
+            FileOutputStream opt = new FileOutputStream(distFile);
 
             byte[] buf = new byte[1024];
             int len = 0;
-            while((len = fis.read(buf))!= -1){
-                fos.write(buf,0,len);
+
+            while ((len = ipt.read(buf)) != -1) {
+                opt.write(buf, 0, len);
             }
 
-            fis.close();
-            fos.close();
+            opt.close();
+            ipt.close();
         }
+
         return distFile.getAbsolutePath();
     }
 
-    public InputStream createCacheFromNetWork(String type, String name, String url)throws IOException{
+    public InputStream createCacheFromNetwork(String type, String name, String url) throws IOException {
         return createCacheFromNetwork(type, name, url, null);
     }
 
-    public InputStream createCacheFromNetwork(String type, String name, String url, ProgressCallback callback)throws IOException{
+    public InputStream createCacheFromNetwork(String type, String name, String url, ProgressCallback callback) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setRequestMethod("GET");
         conn.setConnectTimeout(5000);
-        byte[] buf = readInputStream(conn.getInputStream(),conn.getContentLength(),callback);
-        createCache(type,name,buf);
+        byte[] buf = readInputStream(conn.getInputStream(), conn.getContentLength(), callback);
+        createCache(type, name, buf);
         conn.disconnect();
-        return getCache(type,name);
+
+        // Read From file
+        return getCache(type, name);
     }
 
     public InputStream createLargeCacheFromNetwork(String type, String name, String url, ProgressCallback callback) throws IOException {
@@ -117,68 +125,73 @@ public class FileCacheManager {
         conn.setConnectTimeout(5000);
         createCacheFromStream(type, name, conn.getInputStream(), conn.getContentLength(), callback);
         conn.disconnect();
+
+        // Read From file
         return getCache(type, name);
     }
 
     public void createCacheFromStream(String type, String name, InputStream ipt, int total, ProgressCallback callback) throws IOException {
         String path = getCachePath(type, name);
-        File  f = new File(path);
-        if(f.exists()){
+        File f = new File(path);
+        if (f.exists()) {
             f.delete();
         }
         f.getParentFile().mkdirs();
         f.createNewFile();
 
-        FileOutputStream fos = new FileOutputStream(f);
+        FileOutputStream opt = new FileOutputStream(f);
         byte[] buf = new byte[512];
         int len = 0, read = 0;
-        while((len = ipt.read(buf)) != -1){
-            fos.write(buf, 0, len);
+
+        while ((len = ipt.read(buf)) != -1) {
+            opt.write(buf, 0, len);
             read += len;
             callback.onProgressChanged(read, total);
 
-            if(!callback.shouldContinue()){
-                fos.close();
+            if (!callback.shouldContinue()) {
+                opt.close();
                 ipt.close();
                 f.delete();
                 return;
             }
         }
-        fos.close();
+
+        opt.close();
         ipt.close();
     }
 
-    public InputStream getCache(String type, String name) throws IOException{
+    public InputStream getCache(String type, String name) throws IOException {
         String path = mCacheDir.getPath() + "/" + type + "/" + name;
         File f = new File(path);
-        if(!f.exists()){
+        if (!f.exists()) {
             return null;
-        }else{
-            FileInputStream fis = new FileInputStream(path);
-            return fis;
+        } else {
+            FileInputStream ipt = new FileInputStream(path);
+            return ipt;
         }
     }
 
-    public String getCachePath(String path, String name){
-        return mCacheDir.getPath() + "/" + path + "/" +name;
+    public String getCachePath(String type, String name) {
+        return mCacheDir.getPath() + "/" + type + "/" + name;
     }
 
-    private byte[] readInputStream(InputStream in,int total, ProgressCallback callback) throws IOException{
+    private byte[] readInputStream(InputStream in, int total, ProgressCallback callback) throws IOException {
         ByteArrayOutputStream opt = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
-        int len = 0,read = 0;
-        while((len = in.read(buf)) != -1){
-            opt.write(buf,0,len);
+        int len = 0, read = 0;
+        while ((len = in.read(buf)) != -1) {
+            opt.write(buf, 0, len);
             read += len;
-            if(callback != null){
-                callback.onProgressChanged(read,total);
+
+            if (callback != null) {
+                callback.onProgressChanged(read, total);
             }
         }
         in.close();
-        byte[] ret ;
-        try{
+        byte[] ret;
+        try {
             ret = opt.toByteArray();
-        }catch (OutOfMemoryError e){
+        } catch (OutOfMemoryError e) {
             ret = null;
         }
         opt.close();
@@ -188,20 +201,23 @@ public class FileCacheManager {
     /**
      * 清除缓存
      */
-    public void clearUnavailable(){
-        try{
+    public void clearUnavailable() {
+        try {
             clearUnavailable(mCacheDir);
-        }catch (NullPointerException e){}
+        } catch (NullPointerException e) {
+            // NPE is caused by unmounted sdcard
+            // Just ignore
+        }
     }
 
-    private void clearUnavailable(File dir){
+    private void clearUnavailable(File dir) {
         File[] files = dir.listFiles();
-        for(File f:files){
-            if(f.isDirectory()){
+        for (File f : files) {
+            if (f.isDirectory()) {
                 clearUnavailable(f);
-            }else{
+            } else {
                 long time = f.lastModified();
-                if(!Utility.isCacheAvailable(time, Constants.FILE_CACHE_DAYS)){
+                if (!Utility.isCacheAvailable(time, Constants.FILE_CACHE_DAYS)) {
                     f.delete();
                 }
             }
