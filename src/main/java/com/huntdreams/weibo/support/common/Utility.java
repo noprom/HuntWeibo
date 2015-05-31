@@ -3,12 +3,16 @@ package com.huntdreams.weibo.support.common;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.view.View;
+import android.widget.Toast;
 
+import com.huntdreams.weibo.R;
 import com.huntdreams.weibo.service.ReminderService;
 
 import java.util.concurrent.TimeUnit;
@@ -141,6 +145,18 @@ public class Utility {
 
     public static <T> T findViewById(Activity activity, int id) {
         return (T) activity.findViewById(id);
+    }
+
+    /**
+     * 复制到剪切面板
+     * @param context
+     * @param data
+     */
+    public static void copyToClipboard(Context context, String data){
+        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData cd = ClipData.newPlainText("msg", data);
+        cm.setPrimaryClip(cd);
+        Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show();
     }
 
     /**
