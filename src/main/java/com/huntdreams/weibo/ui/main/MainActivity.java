@@ -5,8 +5,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.huntdreams.weibo.R;
+import com.huntdreams.weibo.cache.search.SearchHistoryCache;
 import com.huntdreams.weibo.ui.common.ToolbarActivity;
 import com.quinny898.library.persistentsearch.SearchBox;
 
@@ -48,8 +51,16 @@ public class MainActivity extends ToolbarActivity{
     private int mDrawerGravity;
     private ActionBarDrawerToggle mToggle;
     private SearchBox mSearchBox;
-    // TODO search history cache
+    private SearchHistoryCache mSearhHistory;
     private View mDim;
+
+    // Drawer content
+    private View mDrawerWrapper;
+    private TextView mName;
+    private View mAccountSwitch, mAccountSwitchIcon;
+    private ImageView mAvatar;
+    private ImageView mCover;
+    private FloatingActionButton mFAB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
