@@ -9,7 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.huntdreams.weibo.R;
+import com.huntdreams.weibo.cache.login.LoginApiCache;
 import com.huntdreams.weibo.cache.search.SearchHistoryCache;
+import com.huntdreams.weibo.cache.user.UserApiCache;
+import com.huntdreams.weibo.model.UserModel;
+import com.huntdreams.weibo.ui.common.FloatingActionButton;
 import com.huntdreams.weibo.ui.common.ToolbarActivity;
 import com.quinny898.library.persistentsearch.SearchBox;
 
@@ -26,7 +30,6 @@ public class MainActivity extends ToolbarActivity{
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    // 刷新接口
     public static interface Refresher{
         void doRefresh();
         void goToTop();
@@ -61,6 +64,14 @@ public class MainActivity extends ToolbarActivity{
     private ImageView mAvatar;
     private ImageView mCover;
     private FloatingActionButton mFAB;
+
+    // Cache and model
+    private LoginApiCache mLoginApiCache;
+    private UserApiCache mUserCache;
+    private UserModel mUser;
+
+    // Fragments
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
