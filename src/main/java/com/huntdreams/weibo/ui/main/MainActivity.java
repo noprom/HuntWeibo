@@ -13,6 +13,7 @@ import com.huntdreams.weibo.cache.login.LoginApiCache;
 import com.huntdreams.weibo.cache.search.SearchHistoryCache;
 import com.huntdreams.weibo.cache.user.UserApiCache;
 import com.huntdreams.weibo.model.UserModel;
+import com.huntdreams.weibo.support.common.Utility;
 import com.huntdreams.weibo.ui.common.FloatingActionButton;
 import com.huntdreams.weibo.ui.common.ToolbarActivity;
 import com.quinny898.library.persistentsearch.SearchBox;
@@ -75,8 +76,10 @@ public class MainActivity extends ToolbarActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Utility.initDarkMode(this);
+        mLayout = R.layout.activity_main;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
         if(DEBUG){
             Log.d(TAG, "onCreate()");
         }
