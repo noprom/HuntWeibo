@@ -1,9 +1,9 @@
 package com.huntdreams.weibo.ui.main;
 
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,10 +15,9 @@ import com.huntdreams.weibo.cache.user.UserApiCache;
 import com.huntdreams.weibo.model.UserModel;
 import com.huntdreams.weibo.support.common.Utility;
 import com.huntdreams.weibo.ui.common.FloatingActionButton;
+import com.huntdreams.weibo.ui.common.SlidingTabLayout;
 import com.huntdreams.weibo.ui.common.ToolbarActivity;
 import com.quinny898.library.persistentsearch.SearchBox;
-
-import static com.huntdreams.weibo.BuildConfig.DEBUG;
 
 /**
  * 应用程序主界面
@@ -71,7 +70,21 @@ public class MainActivity extends ToolbarActivity{
     private UserApiCache mUserCache;
     private UserModel mUser;
 
-    // Fragments
+    // TODO Fragments
+
+    // Actions
+    private View mSetting, mMultiUser;
+
+    // Pager
+    private ViewPager mPager;
+    private SlidingTabLayout mTabs;
+    private SlidingTabLayout mToolbarTabs;
+    private View mTabsWrapper;
+    private int mHeaderHeight = 0,mWrapperHeight = 0;
+    private View mShadow;
+    private View mTopWrapper, mToolbarWrapper;
+
+    // TODO Groups
 
 
     @Override
@@ -80,9 +93,14 @@ public class MainActivity extends ToolbarActivity{
         mLayout = R.layout.activity_main;
         super.onCreate(savedInstanceState);
 
-        if(DEBUG){
-            Log.d(TAG, "onCreate()");
-        }
+        // Initialize views
+        mDrawer = Utility.findViewById(this,R.id.drawer);
+        mDrawerWrapper = Utility.findViewById(this,R.id.drawer_wrapper);
+        mName = Utility.findViewById(this,R.id.account_name);
+        mAvatar = Utility.findViewById(this, R.id.my_account);
+        mCover = Utility.findViewById(this, R.id.my_cover);
+        // TODO initialize pagers
+
 
     }
 }
