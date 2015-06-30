@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/top_wrapper"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_centerVertical="true"
+	android:gravity="center_vertical">
+	
+	<com.huntdreams.weibo.ui.common.SlidingTabLayout
+		android:id="@+id/top_tab"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="?attr/colorPrimary"/>
+</LinearLayout>
