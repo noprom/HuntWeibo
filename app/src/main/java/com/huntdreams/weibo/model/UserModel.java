@@ -100,7 +100,7 @@ public class UserModel implements Parcelable {
         dest.writeBooleanArray(new boolean[]{following, allow_all_act_msg, geo_enabled, verified, allow_all_comment});
     }
 
-    public static final Parcelable.Creator<UserModel> CREATOR = new Parcelable.Creator<UserModel>() {
+    public static final Creator<UserModel> CREATOR = new Creator<UserModel>() {
         @Override
         public UserModel createFromParcel(Parcel input) {
             UserModel ret = new UserModel();

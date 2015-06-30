@@ -17,7 +17,6 @@ import com.huntdreams.weibo.support.common.Utility;
 import com.huntdreams.weibo.ui.common.FloatingActionButton;
 import com.huntdreams.weibo.ui.common.SlidingTabLayout;
 import com.huntdreams.weibo.ui.common.ToolbarActivity;
-import com.quinny898.library.persistentsearch.SearchBox;
 
 /**
  * 应用程序主界面
@@ -53,7 +52,6 @@ public class MainActivity extends ToolbarActivity{
     private DrawerLayout mDrawer;
     private int mDrawerGravity;
     private ActionBarDrawerToggle mToggle;
-    private SearchBox mSearchBox;
     private SearchHistoryCache mSearhHistory;
     private View mDim;
 
