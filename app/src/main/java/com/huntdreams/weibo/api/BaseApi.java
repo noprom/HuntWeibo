@@ -28,7 +28,7 @@ public class BaseApi {
     private static String mAccessToken;
 
     /**
-     * 用于向新浪微博请求服务器数据
+     * 带AccessToken用于向新浪微博请求服务器数据
      * @param url
      * @param params
      * @param method
@@ -52,6 +52,26 @@ public class BaseApi {
             }
         }
 
+    }
+
+    /**
+     * 不带AccessToken用于向新浪微博请求服务器数据
+     * @param url
+     * @param params
+     * @param method
+     * @return
+     * @throws JSONException
+     */
+    protected static JSONObject requestWithoutAccessToken(String url,WeiboParameters params, String method) throws JSONException{
+        String jsonData = AsyncWeiboRunner.request(url, params, method);
+        if(DEBUG){
+            Log.d(TAG, "jsonData = " + jsonData);
+        }
+        if(jsonData != null && jsonData.contains("{")){
+            return new JSONObject(jsonData);
+        }else{
+            return null;
+        }
     }
 
 }
