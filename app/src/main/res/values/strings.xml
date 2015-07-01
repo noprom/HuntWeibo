@@ -279,5 +279,6 @@
         <item>I\'m gonna go mad, seriously.</item>
         <item>Okay, you win.</item>
     </string-array>
+    <string name="title_activity_entry">EntryActivity</string>
 
 </resources>
