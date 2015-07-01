@@ -7,13 +7,15 @@ import com.sina.weibo.sdk.net.WeiboParameters;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import static com.huntdreams.weibo.BuildConfig.DEBUG;
 
 /**
  * 接口基类
+ *
  * @author noprom
  * @email tyee.noprom@qq.com
- *
+ * <p/>
  * Created by noprom on 15/7/1.
  */
 public class BaseApi {
@@ -29,25 +31,26 @@ public class BaseApi {
 
     /**
      * 带AccessToken用于向新浪微博请求服务器数据
+     *
      * @param url
      * @param params
      * @param method
      * @return
      * @throws JSONException
      */
-    protected static JSONObject request(String url, WeiboParameters params,String method) throws JSONException{
-        if(mAccessToken == null){
+    protected static JSONObject request(String url, WeiboParameters params, String method) throws JSONException {
+        if (mAccessToken == null) {
             return null;
-        }else{
+        } else {
             params.put("access_token", mAccessToken);
             String jsonData = AsyncWeiboRunner.request(url, params, method);
-            if(DEBUG){
+            if (DEBUG) {
                 Log.d(TAG, "jsonData = " + jsonData);
             }
 
-            if(jsonData != null && jsonData.contains("{")){
+            if (jsonData != null && jsonData.contains("{")) {
                 return new JSONObject(jsonData);
-            }else{
+            } else {
                 return null;
             }
         }
@@ -56,22 +59,30 @@ public class BaseApi {
 
     /**
      * 不带AccessToken用于向新浪微博请求服务器数据
+     *
      * @param url
      * @param params
      * @param method
      * @return
      * @throws JSONException
      */
-    protected static JSONObject requestWithoutAccessToken(String url,WeiboParameters params, String method) throws JSONException{
+    protected static JSONObject requestWithoutAccessToken(String url, WeiboParameters params, String method) throws JSONException {
         String jsonData = AsyncWeiboRunner.request(url, params, method);
-        if(DEBUG){
+        if (DEBUG) {
             Log.d(TAG, "jsonData = " + jsonData);
         }
-        if(jsonData != null && jsonData.contains("{")){
+        if (jsonData != null && jsonData.contains("{")) {
             return new JSONObject(jsonData);
-        }else{
+        } else {
             return null;
         }
     }
 
+    public static String getAccessToken(){
+        return mAccessToken;
+    }
+
+    public static void setAccessToken(String token){
+        mAccessToken = token;
+    }
 }
