@@ -78,11 +78,11 @@ public class BaseApi {
         }
     }
 
-    public static String getAccessToken(){
+    public static String getAccessToken() {
         return mAccessToken;
     }
 
-    public static void setAccessToken(String token){
+    public static void setAccessToken(String token) {
         mAccessToken = token;
     }
 }
