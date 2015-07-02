@@ -61,7 +61,13 @@ public class LoginActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item == mMenuItem){
-            // TODO
+            new LoginTask().execute(new String[]{
+                    mAppId.getText().toString(),
+                    mAppSecret.getText().toString(),
+                    mUsername.getText().toString(),
+                    mPassword.getText().toString()
+            });
+            return true;
         }else{
             return super.onOptionsItemSelected(item);
         }
