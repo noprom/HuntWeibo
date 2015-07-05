@@ -8,6 +8,7 @@ import com.huntdreams.weibo.api.BaseApi;
 import com.huntdreams.weibo.api.login.LoginApiCache;
 import com.huntdreams.weibo.support.Utility;
 import com.huntdreams.weibo.ui.login.LoginActivity;
+import com.huntdreams.weibo.ui.main.MainActivity;
 
 public class EntryActivity extends Activity {
 
@@ -23,7 +24,12 @@ public class EntryActivity extends Activity {
             finish();
         }else{
             BaseApi.setAccessToken(login.getAccessToken());
-            // TODO Enter the main time line
+            Intent i = new Intent();
+            i.setAction(Intent.ACTION_MAIN);
+            i.setClass(this, MainActivity.class);
+            i.putExtra(Intent.EXTRA_INTENT, getIntent().getIntExtra(Intent.EXTRA_INTENT, 0));
+            startActivity(i);
+            finish();
         }
     }
 
@@ -33,7 +39,6 @@ public class EntryActivity extends Activity {
      * @return
      */
     private boolean needsLogin(LoginApiCache login){
-        // TODO consider expire date
         return login.getAccessToken() == null || Utility.isTokenExpired(login.getExpireDate());
     }
 
