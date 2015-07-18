@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.huntdreams.weibo.api.BaseApi;
 import com.huntdreams.weibo.api.PrivateKey;
 import com.huntdreams.weibo.api.login.LoginApiCache;
 import com.huntdreams.weibo.support.Utility;
+import com.huntdreams.weibo.ui.main.MainActivity;
 
 import static com.huntdreams.weibo.BuildConfig.DEBUG;
 
@@ -60,7 +62,8 @@ public class LoginActivity extends Activity {
             mWeb.loadUrl(PrivateKey.getOauthLoginPage());
         }else{
             mWeb.loadUrl("about:blank");
-            showAppKeyDialog();
+            Log.d(TAG, "mWeb.loadUrl(\"about:blank\")");
+            showAppKeyDialog(); // 显示密钥输入框
         }
     }
 
@@ -123,6 +126,13 @@ public class LoginActivity extends Activity {
         final EditText tvScope = Utility.findViewById(v, R.id.scope);
         final EditText tvPkg = Utility.findViewById(v, R.id.app_pkg);
 
+        if(DEBUG){
+            Log.d(TAG, "tvId = " + tvId);
+            Log.d(TAG, "tvSecret = " + tvSecret);
+            Log.d(TAG, "tvRedirect = " + tvRedirect);
+            Log.d(TAG, "tvPkg = " + tvPkg);
+            Log.d(TAG, "tvScope = " + tvScope);
+        }
         // Initialize values
         String[] val = PrivateKey.getAll();
         tvId.setText(val[0]);
@@ -303,13 +313,17 @@ public class LoginActivity extends Activity {
         }
 
         @Override
-        protected Void doInBackground(String... params) {
-            if(DEBUG){
+        protected Long doInBackground(String... params) {
+            if (DEBUG) {
                 Log.d(TAG, "doInBackground...");
             }
-            // TODO ADD MULTI USER
-            mLogin.login(params[0], params[1], params[2], params[3]);
-            return null;
+
+            if (!mIsMulti) {
+                mLogin.login(params[0], params[1]);
+                return mLogin.getExpireDate();
+            } else {
+                return mLogin.addUser(params[0], params[1]);
+            }
         }
 
         @Override
@@ -317,7 +331,18 @@ public class LoginActivity extends Activity {
             super.onPostExecute(aVoid);
             progressDialog.dismiss();
 
-            // TODO Use user api to see if the login is successful
+            if (!mIsMulti && mLogin.getAccessToken() != null) {
+                if (DEBUG) {
+                    Log.d(TAG, "Access Token:" + mLogin.getAccessToken());
+                    Log.d(TAG, "Expires in:" + mLogin.getExpireDate());
+                }
+                mLogin.cache();
+                BaseApi.setAccessToken(mLogin.getAccessToken());
+            } else if (!mIsMulti && mLogin.getAccessToken() == null) {
+                showLoginFail();
+                return;
+            }
+
             if(mLogin.getAccessToken() != null){
                 if(DEBUG){
                     Log.d(TAG, "Access Token:" + mLogin.getAccessToken());
@@ -325,31 +350,25 @@ public class LoginActivity extends Activity {
                 }
                 mLogin.cache();
                 BaseApi.setAccessToken(mLogin.getAccessToken());
-
-                // TODO ADD IF ELSE STATEMENTS
-                // Expire day
-                String msg = String.format(getResources().getString(R.string.expires_in), Utility.expireTimeInDays(mLogin.getExpireDate()));
-                new AlertDialog.Builder(LoginActivity.this)
-                        .setMessage(msg)
-                        .setCancelable(false)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                                // TODO Enter main timeline
-                                finish();
-                            }
-                        })
-                        .create()
-                        .show();
-            }else{
-                // Wrong username or password
-                new AlertDialog.Builder(LoginActivity.this)
-                        .setMessage(R.string.login_fail)
-                        .setCancelable(true)
-                        .create()
-                        .show();
             }
+            // Expire day
+            String msg = String.format(getResources().getString(R.string.expires_in), Utility.expireTimeInDays(mLogin.getExpireDate()));
+            new AlertDialog.Builder(LoginActivity.this)
+                    .setMessage(msg)
+                    .setCancelable(false)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int id) {
+                            dialogInterface.dismiss();
+                            Intent i = new Intent();
+                            i.setAction(Intent.ACTION_MAIN);
+                            i.setClass(LoginActivity.this, MainActivity.class);
+                            startActivity(i);
+                            finish();
+                        }
+                    })
+                    .create()
+                    .show();
         }
     }
 }

@@ -1,5 +1,14 @@
 package com.huntdreams.weibo.support;
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.view.View;
+import android.widget.Toast;
+
+import com.huntdreams.weibo.R;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,5 +36,27 @@ public class Utility {
      */
     public static boolean isTokenExpired(long time){
         return time <= System.currentTimeMillis();
+    }
+
+    /**
+     * 复制到剪切板
+     * @param context
+     * @param data
+     */
+    public static void copyToClipboard(Context context, String data) {
+        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData cd = ClipData.newPlainText("msg", data);
+        cm.setPrimaryClip(cd);
+
+        // Inform the user
+        Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show();
+    }
+
+    public static <T> T findViewById(View v, int id) {
+        return (T) v.findViewById(id);
+    }
+
+    public static <T> T findViewById(Activity activity, int id) {
+        return (T) activity.findViewById(id);
     }
 }
