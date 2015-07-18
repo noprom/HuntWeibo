@@ -59,4 +59,14 @@ public class Utility {
     public static <T> T findViewById(Activity activity, int id) {
         return (T) activity.findViewById(id);
     }
+
+    /**
+     * 缓存是否可以使用
+     * @param createTime
+     * @param availableDays
+     * @return
+     */
+    public static boolean isCacheAvailable(long createTime, int availableDays) {
+        return System.currentTimeMillis() <= createTime + TimeUnit.DAYS.toMillis(availableDays);
+    }
 }

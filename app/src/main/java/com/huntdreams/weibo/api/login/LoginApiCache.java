@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import com.huntdreams.weibo.api.BaseApi;
 import com.huntdreams.weibo.api.user.AccountApi;
+import com.huntdreams.weibo.cache.user.UserApiCache;
+import com.huntdreams.weibo.model.UserModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
